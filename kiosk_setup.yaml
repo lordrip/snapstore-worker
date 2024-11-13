@@ -1,0 +1,44 @@
+---
+- name: Prepare Raspberry Pi for Kiosk Mode
+  hosts: raspberry_pi
+  become: true
+  vars:
+    base_url: https://snapstore.appshark.co.uk/workers/
+    worker_id: FF0FB5
+    user: rmartinez
+
+  tasks:
+    - name: Update and upgrade apt packages
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+
+    - name: Install dependencies
+      ansible.builtin.apt:
+        name:
+          - chromium-browser
+          - xdotool
+          - unclutter
+        state: present
+
+    - name: Create kiosk script
+      ansible.builtin.template:
+        src: support/start_kiosk.j2
+        dest: /home/{{ user }}/start_kiosk.sh
+        mode: '0755'
+
+    - name: Create systemd service file for kiosk
+      ansible.builtin.template:
+        src: support/kiosk.service.j2
+        dest: /etc/systemd/system/kiosk.service
+        mode: '0644'
+
+    - name: Reload systemd to apply changes
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Enable kiosk service
+      ansible.builtin.systemd:
+        name: kiosk.service
+        enabled: true
+        state: started

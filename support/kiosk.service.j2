@@ -1,0 +1,12 @@
+[Unit]
+Description=Kiosk Mode
+After=network.target graphical.target
+
+[Service]
+User={{ user }}
+Environment=DISPLAY=:0
+ExecStart=/home/{{ user }}/start_kiosk.sh
+Restart=always
+
+[Install]
+WantedBy=graphical.target

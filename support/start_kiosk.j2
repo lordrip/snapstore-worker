@@ -1,0 +1,7 @@
+#!/bin/bash
+sleep 10
+xset s off
+xset -dpms
+xset s noblank
+unclutter &
+chromium-browser --noerrdialogs --disable-infobars --kiosk {{ base_url }}{{ worker_id }} > /home/{{ user }}/kiosk.log 2>&1
