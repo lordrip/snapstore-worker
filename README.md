@@ -30,21 +30,35 @@ brew install pipx
 ```bash
 pipx install --include-deps ansible
 ```
-
-## Installation
-1. Clone this repository
-2. Copy the [`inventory.ini-example`](inventory.ini-example) file to `inventory.ini`
+5. Clone this repository
+6. Copy the [`inventory.ini-example`](inventory.ini-example) file to `inventory.ini`
 ```bash
 cp inventory.ini-example inventory.ini
 ```
-3. Edit the `inventory.ini` file and set the correct values
+7. Edit the `inventory.ini` file and set the correct values
 ```
 [raspberry_pi]
 # <IP>        ansible_user=<USER>    ansible_ssh_private_key_file=<PATH_TO_SSH_KEY>
 192.168.1.184 ansible_user=rmartinez ansible_ssh_private_key_file=~/.ssh/id_rsa
 ```
-4. Enable the `ssh` service on the Raspberry PI
-5. Run the [`kiosk_setup.yaml`](kiosk_setup.yaml) playbook
+8. Install ansible-galaxy dependencies
 ```bash
-ansible-playbook -i inventory.ini kios_setup.yaml
+ansible-galaxy install -r requirements.yaml
+```
+
+## Installation on the Raspberry PI
+1. Enable the `ssh` service on the Raspberry PI
+2. Run the [`kiosk_setup_linux.yaml`](kiosk_setup_linux.yaml) playbook
+```bash
+ansible-playbook -i inventory.ini kios_setup_linux.yaml
+```
+
+## Installation on Windows
+1. Install openssh server on Windows
+```powershell
+winget install OpenSSH.Server
+```
+2. Run the [`kiosk_setup_windows.yaml`](kiosk_setup_windows.yaml) playbook
+```bash
+ansible-playbook -i inventory.ini kios_setup_windows.yaml
 ```

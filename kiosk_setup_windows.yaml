@@ -1,0 +1,37 @@
+---
+- name: Prepare Windows Machine for Kiosk Mode
+  hosts: windows
+  become: true
+  vars:
+    base_url: https://snapstore.appshark.co.uk/workers/
+    worker_id: FF0FB5
+    user: rmartinez
+
+  tasks:
+    - name: Ensure Chocolatey is installed
+      chocolatey.chocolatey.win_chocolatey:
+        state: present
+
+    - name: Install dependencies
+      chocolatey.chocolatey.win_chocolatey:
+        name:
+          - googlechrome
+        state: present
+
+    - name: Create kiosk script
+      ansible.windows.win_template:
+        src: support/start_kiosk.ps1.j2
+        dest: C:\Users\{{ user }}\start_kiosk.ps1
+
+    - name: Create scheduled task for kiosk script
+      community.windows.win_scheduled_task:
+        name: KioskMode
+        description: "Start Chrome in kiosk mode"
+        actions:
+          - path: powershell.exe
+            arguments: "-File C:\\Users\\{{ user }}\\start_kiosk.ps1"
+        triggers:
+          - type: startup
+        username: "{{ user }}"
+        state: present
+        enabled: true
